@@ -188,7 +188,7 @@ $(function() {
 	$(window).scroll(function() {
 		if(cur_idx * 24 > cur_pm_list.length)
 			return false;
-		if($(window).scrollTop() != $(document).height() - $(window).height())
+		if($(window).scrollTop() + 10 < $(document).height() - $(window).height())
 			return false;
 		var threshold = ((cur_idx+1) * 24 < cur_pm_list.length) ? (cur_idx+1) * 24 : cur_pm_list.length;
 		console.log(threshold);
