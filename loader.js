@@ -62,7 +62,7 @@ function set_name(mno = -1) {
 }
 
 function resolve_name(body, mno=-1, target_str = "&lt;위즈원&gt;") {
-	var name = get_name(mno);
+	var name = get_name(mno) || "WIZ*ONE";
 	var chk = name[name.length - 1].charCodeAt(0) - 44032;
 	var flag = true; //existence of the last part of Korean
 	if(chk < 0 || 11171 < chk)
