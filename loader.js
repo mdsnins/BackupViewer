@@ -72,8 +72,8 @@ function resolve_name(body, mno=-1, target_str = "&lt;위즈원&gt;") {
 
 	var target_len = target_str.length;
 	var next_pos = target_str.length + 1;
-
-	while((t = body.indexOf(target_str)) != -1) {
+	var t = -name.length;
+	while((t = body.indexOf(target_str, t + name.length)) != -1) {
 		try {
 			if((body[t + target_len] == "이" || body[t + target_len] == "가") && body[t + next_pos] == " ")
 				body = body.slice(0, t) + name + (flag ? "이" : "가") + body.slice(t + next_pos);
@@ -88,12 +88,14 @@ function resolve_name(body, mno=-1, target_str = "&lt;위즈원&gt;") {
 			body = body.slice(0,t) + name + body.slice(t + target_len);
 		}
 	}
-	return body;
+	return {body: body, last_match: t + name.length};
 }
 
 function add_card(i, mail)
 {
-	mail.preview = resolve_name(mail.preview, member_dict[mail.member], "<위즈원>").replace(/<위즈원/g, get_name()).replace(/<위즈/g, get_name()).replace(/<위/g, get_name());
+	let t = resolve_name(mail.preview, member_dict[mail.member], "<위즈원>");
+	mail.preview = t.body.substring(0, t.last_match);
+	mail.preview += t.body.substring(t.last_match).replace(/<위즈원/g, "{{}}").replace(/<위즈/g, "{{}}").replace(/<위/g, "{{}}").replace("{{}}", get_name());
 	var value = `<div class="col-md-4"><div class="card mb-4 shadow-sm" data-mail-index="${i}" data-mail-id="${mail.id}"><div class="card-body"><div class="row">`+
 			`<div class="col-4 d-flex justify-content-center align-items-center"><img class="img-profile" src="img/profile/${member_dict[mail.member]}.jpg" /></div>` +
 			`<div class="col-7"><strong>${mail.subject}</strong><br/>${mail.preview} <span class="text-muted">...</span></div></div>` +
@@ -182,7 +184,7 @@ $(function() {
 	
 	
 	$("#body_mail").on("load", function() { 
-		window.frames[0].document.body.innerHTML = resolve_name(window.frames[0].document.body.innerHTML, parseInt($("#body_mail").data("member")));
+		window.frames[0].document.body.innerHTML = resolve_name(window.frames[0].document.body.innerHTML, parseInt($("#body_mail").data("member"))).body;
 	});
 	// Infinite Scroll
 	$(window).scroll(function() {
